@@ -18,12 +18,13 @@ Route::get('/', function () {
 use App\User;
 use App\Profile;
 use App\Post;
+use Illuminate\Support\Str;
 
 // Membuat User
 Route::get('/create_users', function () {
     $user = User::create([
-        'name' => 'Nadiah Tsamara Pratiwi',
-        'email' => 'nadiah@gmail.com',
+        'name' => 'Muhammad Reza Pahlevi Y',
+        'email' => 'rezarubik17@gmail.com',
         'password' => bcrypt('password')
     ]);
     return $user;
@@ -44,7 +45,7 @@ Route::get('/create_profile', function () {
 });
 // Membuat user profile
 Route::get('/create_users_profile', function () {
-    $user = User::find(5);
+    $user = User::find(1);
     $profile = new Profile([
         'phone' => '089501011011',
         'address' => 'Jl. Teluk Langsa 4 Blok C.8 No.4 Duren Sawit, Jakarta Timur'
@@ -77,10 +78,10 @@ Route::get('/read_profile', function () {
 });
 // Update data Profile
 Route::get('/update_profile', function () {
-    $user = User::find(2);
+    $user = User::find(1);
     $data = [
         'phone' => '08788221',
-        'address' => 'Jl. Kalibata Tengah XVIII No. 29 Jakarta Selatan'
+        'address' => 'Jl. Teluk Langsa 4 Blok C.8 No.4, Duren Sawit, Jakarta Timur'
     ];
     $user->profile->update($data);
     return $user;
@@ -103,8 +104,8 @@ Route::get('/create_post', function () {
     // $user = User::create($data_user);
     $user = User::findOrFail(2);
     $data_post = [
-        'title' => 'Physics is Fun',
-        'body' => 'Lets go to learn physics with fun learning!'
+        'title' => 'Math and Physics is Fun',
+        'body' => 'Lets go to learn math and physics with fun learning!'
     ];
     $user->posts()->create($data_post);
     return $user;
@@ -113,7 +114,7 @@ Route::get('/create_post', function () {
  * Read data posts
  */
 Route::get('/read_posts', function () {
-    $user = User::findOrFail(5);
+    $user = User::findOrFail(2);
     $posts = $user->posts()->get();
     foreach ($posts as $post) {
         $data[] = [
@@ -153,9 +154,14 @@ Route::get('/delete_post', function () {
  */
 Route::get('/create_categories', function () {
     $post = Post::findOrFail(1);
-    $data = [
-        'slug' => Str::slug('Belajar Laravel', '-'),
-        'category' => 'Belajar Laravel'
-    ];
-    $post->categories()->create($data);
+    $post->categories()->create([
+        'slug' => Str::slug('Learn Laravel Success', '-'),
+        'category' => 'Learn Laravel Success'
+    ]);
+    return 'success';
+    // $data = [
+    //     'slug' => Str::slug('Belajar Laravel', '-'),
+    //     'category' => 'Belajar Laravel Relasi'
+    // ];
+    // $post->categories()->create($data);
 });
