@@ -18,6 +18,8 @@ Route::get('/', function () {
 use App\User;
 use App\Profile;
 use App\Post;
+use App\Category;
+use App\Role;
 use Illuminate\Support\Str;
 
 // Membuat User
@@ -104,8 +106,8 @@ Route::get('/create_post', function () {
     // $user = User::create($data_user);
     $user = User::findOrFail(2);
     $data_post = [
-        'title' => 'Math and Physics is Fun',
-        'body' => 'Lets go to learn math and physics with fun learning!'
+        'title' => 'Title milik Member 1',
+        'body' => 'Body milik Member 1'
     ];
     $user->posts()->create($data_post);
     return $user;
@@ -114,7 +116,7 @@ Route::get('/create_post', function () {
  * Read data posts
  */
 Route::get('/read_posts', function () {
-    $user = User::findOrFail(2);
+    $user = User::findOrFail(1);
     $posts = $user->posts()->get();
     foreach ($posts as $post) {
         $data[] = [
@@ -153,15 +155,82 @@ Route::get('/delete_post', function () {
  * Create Data Categories
  */
 Route::get('/create_categories', function () {
-    $post = Post::findOrFail(1);
-    $post->categories()->create([
-        'slug' => Str::slug('Learn Laravel Success', '-'),
-        'category' => 'Learn Laravel Success'
+    // $post = Post::findOrFail(1);
+    // // dd($post);
+    // $post->categories()->create([
+    //     'slug' => Str::slug('Belajar PHP', '-'),
+    //     'category' => 'Belajar PHP'
+    // ]);
+    // return 'success';
+    // Sekaligus membuat user, post, dan categories
+    $user = User::create([
+        'name' => 'Nadiah Tsamra Pratiwi',
+        'email' => 'tspnadiah@gmail.com',
+        'password' => bcrypt('password')
     ]);
-    return 'success';
-    // $data = [
-    //     'slug' => Str::slug('Belajar Laravel', '-'),
-    //     'category' => 'Belajar Laravel Relasi'
-    // ];
-    // $post->categories()->create($data);
+    $user->posts()->create([
+        'title' => 'Pyhsics is fun',
+        'body' => 'Lets go to learn physics'
+    ])->categories()->create([
+        'slug' => Str::slug('Belajar Fisika', '-'),
+        'category' => 'Belajar Fisika'
+    ]);
+    return 'Success';
 });
+
+/**
+ * Read Data Categories
+ */
+Route::get('/read_category', function () {
+    // Read data dari category. Mengakses data category berdasarkan data post.
+    $post = Post::find(2);
+    $categories = $post->categories;
+    foreach ($categories as $category) {
+        echo $category->slug . '</br>';
+    }
+    // Memanggil data category dengan id tertentu
+    // $category = Category::find(1);
+    // $posts = $category->posts;
+    // foreach ($posts as $post) {
+    //     echo $post->title . '</br>';
+    // }
+});
+/**
+ * Attaching Related Data Many To Many
+ */
+Route::get('/attach', function () {
+    // Memberikan cateogry baru kepada post
+    // $post = Post::find(2); // post dengan id = 2
+    $post = Post::find(3); // post dengan id = 3
+    // $post->categories()->attach(1); // memberikan data category 1 kepada post id 2
+    $post->categories()->attach([1, 2, 3]); // memberikan data category 3 kepada post id 1, 2, 3
+    return 'Attach Success';
+});
+
+/** 
+ * Detaching Related Data Many To Many
+ */
+Route::get('/detach', function () {
+    // Menghapus kategori pada post tertentu
+    $post = Post::find(3);
+    $post->categories()->detach([1, 2]);
+    return 'Detach Success';
+});
+/**
+ * Syncing Related Data untuk sinkronisasi data dengan Many To Many
+ */
+Route::get('/sync', function () {
+    $post = Post::find(3);
+    $post->categories()->sync([1, 3]);
+    return 'Syncing Success';
+});
+/**
+ * Hany Many Through Show Related Data
+ */
+Route::get('/role/posts', function () {
+    $role = Role::find(2);
+    return $role->posts;
+});
+/**
+ * Polymorphic
+ */
